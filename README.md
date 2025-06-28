@@ -1,4 +1,96 @@
 # 🚀 Splitwise Expense Tracker (FastAPI + React + Docker)
+
+A simplified Splitwise clone that lets users:
+✅ Create groups  
+✅ Add shared expenses (equal or percentage splits)  
+✅ View balances (who owes whom)  
+
+---
+
+## ⚡ Setup & Run
+
+### Prerequisites
+- Docker + Docker Compose installed and running
+- (Optional) Node.js and Python locally if running outside Docker
+
+---
+
+### 🐳 Run full stack with one command
+```bash
+docker compose up --build
+```
+
+- Backend: [http://localhost:8000](http://localhost:8000)  
+- API docs: [http://localhost:8000/docs](http://localhost:8000/docs)  
+- Frontend: [http://localhost:3000](http://localhost:3000)
+
+---
+
+## 📌 API Endpoints
+
+### Group Management
+| Method | URL | Description |
+|--------|-----|-------------|
+| POST | `/groups` | Create a new group. Body: `{ "name": "Group Name", "user_ids": [1, 2, 3] }` |
+| GET | `/groups/{group_id}` | Get group details (name, users, total expenses). |
+| GET | `/groups/{group_id}/balances` | See who owes whom in the group. |
+
+### Expense Management
+| Method | URL | Description |
+|--------|-----|-------------|
+| POST | `/groups/{group_id}/expenses` | Add an expense. Body: `{ "description": "", "amount": 100, "paid_by": 1, "split_type": "equal" / "percentage", "splits": [...] }` |
+
+### User Balances
+| Method | URL | Description |
+|--------|-----|-------------|
+| GET | `/users/{user_id}/balances` | Get a user's balances across all groups. |
+
+---
+
+## 📝 Assumptions
+
+- No authentication or user login (for simplicity)
+- `SplitType` supports: `equal` and `percentage`
+- For percentage splits, percentages must sum to 100
+- No payment/settlement flow — just tracks who owes whom
+- Docker setup assumes local development (not production-ready)
+
+---
+
+## ☁ Deploying on Railway
+
+### 1. Push to GitHub
+```bash
+git init
+git add .
+git commit -m "Initial commit"
+git remote add origin <your-repo-url>
+git push -u origin main
+```
+
+### 2. Setup Railway
+- Visit [https://railway.app](https://railway.app)
+- Create a project → Connect GitHub Repo
+- Add PostgreSQL plugin
+
+### 3. Configure Environment
+- In Railway project settings:
+  ```
+  DATABASE_URL=postgresql://user:pass@host:port/dbname
+  ```
+
+### 4. Deploy
+- Railway will auto-build and deploy
+- Access your deployed site at:
+  ```
+  https://your-app-name.up.railway.app
+  ```
+
+---
+
+Built with ❤️ using FastAPI, React, Tailwind, PostgreSQL and Docker.
+=======
+# 🚀 Splitwise Expense Tracker (FastAPI + React + Docker)
 A simplified Splitwise clone that lets users:
 ✅ Create groups
 ✅ Add shared expenses (equal or percentage splits)
