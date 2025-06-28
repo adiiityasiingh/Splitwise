@@ -1,0 +1,20 @@
+services:
+  - type: web
+    name: backend
+    env: docker
+    plan: free
+    autoDeploy: true
+    buildCommand: docker build -t backend ./backend
+    startCommand: docker run -p 8000:8000 backend
+    healthCheckPath: /docs
+    envVars:
+      - key: DATABASE_URL
+        value: <YOUR_POSTGRES_URL>
+
+  - type: web
+    name: frontend
+    env: docker
+    plan: free
+    autoDeploy: true
+    buildCommand: docker build -t frontend ./frontend
+    startCommand: docker run -p 80:80 frontend
