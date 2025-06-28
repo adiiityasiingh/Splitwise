@@ -4,17 +4,19 @@ services:
     env: docker
     plan: free
     autoDeploy: true
-    buildCommand: docker build -t backend ./backend
-    startCommand: docker run -p 8000:8000 backend
+    dockerfilePath: ./backend/Dockerfile
+    buildCommand: ""  # not needed for docker env
+    startCommand: ""  # use CMD in Dockerfile
     healthCheckPath: /docs
     envVars:
       - key: DATABASE_URL
-        value: <YOUR_POSTGRES_URL>
+        value: <YOUR_RENDER_POSTGRES_URL>
 
   - type: web
     name: frontend
     env: docker
     plan: free
     autoDeploy: true
-    buildCommand: docker build -t frontend ./frontend
-    startCommand: docker run -p 80:80 frontend
+    dockerfilePath: ./frontend/Dockerfile
+    buildCommand: ""
+    startCommand: ""
