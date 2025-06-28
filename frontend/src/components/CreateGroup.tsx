@@ -133,7 +133,7 @@ const CreateGroup: React.FC = () => {
                 <p className="text-sm text-gray-600 mb-2">Selected members:</p>
                 <div className="flex flex-wrap gap-2">
                   {selectedUsers.map(userId => {
-                    const user = users.find(u => u.id === Number(userId));
+                    const user = users.find(u => u.id === userId);
                     return user ? (
                       <div
                         key={userId}

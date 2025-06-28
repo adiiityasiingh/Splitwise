@@ -35,6 +35,8 @@ export interface Expense {
 }
 
 export interface Balance {
+  to: ReactNode;
+  from: ReactNode;
   userId: string;
   userName: string;
   amount: number; // positive means they owe, negative means they are owed

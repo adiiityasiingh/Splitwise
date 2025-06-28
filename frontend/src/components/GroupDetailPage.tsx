@@ -2,7 +2,7 @@ import AddExpenseForm from "./AddExpenseForm";
 import GroupBalances from "./GroupBalances";
 import { useExpenseContext } from "../context/ExpenseContext";
 
-export default function GroupDetailPage({ groupId }) {
+export default function GroupDetailPage({ groupId }: { groupId: string }) {
   const { groups } = useExpenseContext();
   const group = groups.find(g => g.id === groupId);
 

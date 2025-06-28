@@ -2,7 +2,7 @@ from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
 from app.database import get_db
 from app import models, schemas
-from app.models import SplitType  # Add this import if SplitType is defined in models
+from app.schemas import SplitType 
 
 router = APIRouter()
 
@@ -35,17 +35,25 @@ def add_expense(group_id: int, expense: schemas.ExpenseCreate, db: Session = Dep
     split_user_ids = {s.user_id for s in expense.splits}
     if not split_user_ids.issubset(group_user_ids):
         raise HTTPException(status_code=400, detail="All split users must be part of the group")
+    
+    print(f"Received split_type: {expense.split_type}")
+    print(f"Split type: {type(expense.split_type)}")
 
     # Validate splits
-    if expense.split_type == schemas.SplitType.PERCENTAGE:
-        total_pct = sum(s.percentage or 0 for s in expense.splits)
+    if expense.split_type == SplitType.PERCENTAGE:
+        total_pct = sum((s.percentage or 0) for s in expense.splits)
         if abs(total_pct - 100) > 0.01:
             raise HTTPException(status_code=400, detail=f"Percentage splits must sum to 100. Got {total_pct}")
         if any(s.percentage is None for s in expense.splits):
             raise HTTPException(status_code=400, detail="Each split must have a percentage for percentage split")
-    elif expense.split_type == schemas.SplitType.EQUAL:
+
+    elif expense.split_type == SplitType.EQUAL:
         if any(s.percentage is not None for s in expense.splits):
             raise HTTPException(status_code=400, detail="Splits must not include percentage for equal split")
+    else:
+        raise HTTPException(status_code=400, detail=f"Invalid split_type: {expense.split_type}")
+
+
 
     # Create expense record
     db_expense = models.Expense(
@@ -61,12 +69,22 @@ def add_expense(group_id: int, expense: schemas.ExpenseCreate, db: Session = Dep
 
     # Calculate split amounts
     if expense.split_type == schemas.SplitType.EQUAL:
-        per_person = round(expense.amount / len(expense.splits), 2)
-        splits_data = [
-            models.ExpenseSplit(expense_id=db_expense.id, user_id=s.user_id, amount=per_person)
-            for s in expense.splits
-        ]
-    else:  # PERCENTAGE
+        if len(expense.splits) == 0:
+            raise HTTPException(status_code=400, detail="Splits required for EQUAL split")
+
+        if any(s.user_id is None for s in expense.splits):
+            raise HTTPException(status_code=400, detail="All splits must include user_id")
+
+        if any(s.percentage is not None for s in expense.splits):
+            raise HTTPException(status_code=400, detail="Splits must not include percentage for equal split")
+
+    per_person = round(expense.amount / len(expense.splits), 2)
+    splits_data = [
+        models.ExpenseSplit(expense_id=db_expense.id, user_id=s.user_id, amount=per_person)
+        for s in expense.splits
+    ]
+
+    if expense.split_type == SplitType.PERCENTAGE:
         splits_data = [
             models.ExpenseSplit(
                 expense_id=db_expense.id,

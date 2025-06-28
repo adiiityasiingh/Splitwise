@@ -1,7 +1,8 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
+import { Balance } from '../types';
 
-export default function GroupBalances({ groupId }) {
+export default function GroupBalances({ groupId }: { groupId: string }) {
   const [balances, setBalances] = useState([]);
 
   useEffect(() => {
@@ -11,7 +12,7 @@ export default function GroupBalances({ groupId }) {
   return (
     <div>
       <h2 className="font-bold">Group Balances</h2>
-      {balances.map((b, i) => (
+      {balances.map((b: Balance, i: number) => (
         <p key={i}>{b.from} owes {b.to} ₹{b.amount}</p>
       ))}
     </div>
